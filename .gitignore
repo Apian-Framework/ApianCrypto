@@ -1,0 +1,14 @@
+# .gitignore for .NET Core library + Unity 3D package
+# .meta and .asmdef files must not be ignored
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]in/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Cc]overage/
+srcassets/
+.vscode/
+.vs/
+inspectcode.xml

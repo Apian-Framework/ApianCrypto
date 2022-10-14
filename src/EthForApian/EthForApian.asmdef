@@ -1,0 +1,25 @@
+{
+    "name": "EthForApian",
+    "rootNamespace": "",
+    "references": [
+        "UniLog",
+        "ApianCrypto"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Nethereum.Web3.dll",
+        "Nethereum.JsonRpc.Client.dll",
+        "Microsoft.Extensions.Logging.Abstractions.dll",
+        "Nethereum.RPC.dll",
+        "Nethereum.Signer.dll",
+        "Nethereum.Accounts.dll",
+        "Nethereum.KeyStore.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
