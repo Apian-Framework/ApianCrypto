@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ApianCrypto\ApianCrypto.csproj" />
-    <ProjectReference Include="..\..\..\UniLog\src\UniLog\UniLog.csproj" />
+    <ProjectReference Include="$(UniLogSource)\src\UniLog\UniLog.csproj" />
   </ItemGroup>
 
   <ItemGroup>
