@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "UniLog",
-        "ApianCrypto"
+        "ApianCrypto",
+        ""
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -16,7 +17,11 @@
         "Nethereum.RPC.dll",
         "Nethereum.Signer.dll",
         "Nethereum.Accounts.dll",
-        "Nethereum.KeyStore.dll"
+        "Nethereum.KeyStore.dll",
+        "Nethereum.Hex.dll",
+        "Nethereum.Contracts.dll",
+        "Nethereum.Unity.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
