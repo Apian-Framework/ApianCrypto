@@ -25,7 +25,7 @@ namespace ApianCrypto
         public abstract string CreateAccountForKey(byte[] privateKeyBytes);
         public abstract string CreateAccountFromJson(string password, string acctJson);
         public abstract string GetJsonForAccount(string password);
-        public abstract string EncodeUTF8AndSign(string msg);
+        public abstract string EncodeUTF8AndSign(string adddr, string msg);
         public abstract string EncodeUTF8AndEcRecover(string message, string signature);
         public abstract string HashString(string data);
 

@@ -23,8 +23,8 @@ namespace ApianCrypto
         string CreateAccountFromJson(string password, string acctJson);
         string GetJsonForAccount(string password);
 
-        string HashString(string data);
-        string EncodeUTF8AndSign(string msg); // w/ eth prefix
+        string HashString(string data); // addr must match currently loaded acct
+        string EncodeUTF8AndSign(string addr, string msg); // w/ eth prefix
         string EncodeUTF8AndEcRecover(string message, string signature);
 
         bool IsConnected {get;}

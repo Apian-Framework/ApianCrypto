@@ -156,9 +156,11 @@ namespace ApianCrypto
         }
 
         // Sign/recover text message
-        public string EncodeUTF8AndSign(string msg)
+        public string EncodeUTF8AndSign(string addr, string msg)
         {
-            //var  signer = new EthereumMessageSigner(); // TODO: Maybe create this when account is created and keep it?
+            if (addr.ToUpper() != ethAccount.Address.ToUpper())
+                throw new Exception("EncodeUTF8AndSign() address {addr} is no loaded account {ethAccount.Address}");
+
             return ethSigner.EncodeUTF8AndSign(msg,  new EthECKey(ethAccount.PrivateKey));
 
         }
