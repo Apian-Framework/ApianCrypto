@@ -20,11 +20,12 @@ namespace ApianCrypto
 
     public abstract class ApianCryptoBase : IApianCrypto
     {
-        public abstract string AccountAddress {get; }
-        public abstract string CreateAccount();
-        public abstract string CreateAccountForKey(byte[] privateKeyBytes);
-        public abstract string CreateAccountFromJson(string password, string acctJson);
-        public abstract string GetJsonForAccount(string password);
+        public abstract string CurrentAccountAddress {get; }
+        public abstract string SetNewAccount();
+        public abstract string SetAccountFromKey(byte[] privateKeyBytes);
+        public abstract string SetAccountFromJson(string password, string acctJson);
+        public abstract string JsonForCurrentAccount(string password);
+        public abstract (string,string) JsonForNewAccount(string password);
         public abstract string EncodeUTF8AndSign(string adddr, string msg);
         public abstract string EncodeUTF8AndEcRecover(string message, string signature);
         public abstract string HashString(string data);

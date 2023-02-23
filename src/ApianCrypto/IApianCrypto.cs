@@ -17,11 +17,12 @@ namespace ApianCrypto
     public interface IApianCrypto
     {
 
-        string AccountAddress {get; }
-        string CreateAccount();
-        string CreateAccountForKey(byte[] privateKeyBytes);
-        string CreateAccountFromJson(string password, string acctJson);
-        string GetJsonForAccount(string password);
+        string CurrentAccountAddress {get; }
+        string SetNewAccount(); // creates and sets internally
+        string SetAccountFromKey(byte[] privateKeyBytes);
+        string SetAccountFromJson(string password, string acctJson);
+        string JsonForCurrentAccount(string password);
+        (string,string) JsonForNewAccount(string password); // ( address, json)
 
         string HashString(string data); // addr must match currently loaded acct
         string EncodeUTF8AndSign(string addr, string msg); // w/ eth prefix

@@ -27,7 +27,7 @@ namespace ApianCrypto
 #endif
 
         public bool IsConnected => web3 != null;
-        public string AccountAddress => ethAccount.Address;
+        public string CurrentAccountAddress => ethAccount.Address;
 
         public static EthForApian Create()
         {
@@ -123,29 +123,29 @@ namespace ApianCrypto
 
 
         // Account
-        public string CreateAccount()
+        public string SetNewAccount()
         {
             var ecKey = Nethereum.Signer.EthECKey.GenerateKey();
             ethAccount = new Account(ecKey);
-            return AccountAddress;
+            return CurrentAccountAddress;
         }
 
-        public string CreateAccountForKey(byte[] privateKeyBytes)
+        public string SetAccountFromKey(byte[] privateKeyBytes)
         {
             string pkStr = System.Text.Encoding.UTF8.GetString(privateKeyBytes);
             ethAccount = new Account(pkStr);
-            return AccountAddress;
+            return CurrentAccountAddress;
         }
 
-        public string CreateAccountFromJson(string password, string acctJson)
+        public string SetAccountFromJson(string password, string acctJson)
         {
             var keyStoreService = new Nethereum.KeyStore.KeyStoreScryptService();
             var key = keyStoreService.DecryptKeyStoreFromJson(password, acctJson);
             ethAccount = new Account(key);
-            return AccountAddress;
+            return CurrentAccountAddress;
         }
 
-        public string GetJsonForAccount(string password)
+        public string JsonForCurrentAccount(string password)
         {
             var keyStoreService = new Nethereum.KeyStore.KeyStoreScryptService();
             var scryptParams = new Nethereum.KeyStore.Model.ScryptParams{Dklen = 32, N = 262144, R = 1, P = 8};
@@ -153,6 +153,16 @@ namespace ApianCrypto
             var keyStore = keyStoreService.EncryptAndGenerateKeyStore(password, ecKey.GetPrivateKeyAsBytes(), ecKey.GetPublicAddress(), scryptParams);
             var json = keyStoreService.SerializeKeyStoreToJson(keyStore);
             return json;
+        }
+
+        public (string, string) JsonForNewAccount(string password)
+        {
+           var keyStoreService = new Nethereum.KeyStore.KeyStoreScryptService();
+            var ecKey = Nethereum.Signer.EthECKey.GenerateKey();
+            var scryptParams = new Nethereum.KeyStore.Model.ScryptParams{Dklen = 32, N = 262144, R = 1, P = 8};
+            var keyStore = keyStoreService.EncryptAndGenerateKeyStore(password, ecKey.GetPrivateKeyAsBytes(), ecKey.GetPublicAddress(), scryptParams);
+            var json = keyStoreService.SerializeKeyStoreToJson(keyStore);
+            return (ecKey.GetPublicAddress(), json);
         }
 
         // Sign/recover text message
