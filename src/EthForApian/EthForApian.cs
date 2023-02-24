@@ -27,7 +27,7 @@ namespace ApianCrypto
 #endif
 
         public bool IsConnected => web3 != null;
-        public string CurrentAccountAddress => ethAccount.Address;
+        public string CurrentAccountAddress => ethAccount?.Address;
 
         public static EthForApian Create()
         {
