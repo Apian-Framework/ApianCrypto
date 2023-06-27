@@ -32,6 +32,8 @@ namespace ApianCrypto
 
         public abstract bool IsConnected {get;}
         public abstract void Connect(string provider, IApianCryptoClient client=null);
+        public abstract void Connect(Object provider, IApianCryptoClient client = null);
+
         public abstract void Disconnect();
 
         public abstract void GetChainId();

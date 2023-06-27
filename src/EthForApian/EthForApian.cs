@@ -54,6 +54,15 @@ namespace ApianCrypto
 #endif
         }
 
+        public void Connect(Object provider, IApianCryptoClient client = null)
+        {
+            callbackClient = client;
+            web3 = provider as Web3;
+#if UNITY_2019_1_OR_NEWER
+            unityHelper.SetupConnection(providerURL, client);
+#endif
+        }
+
         public void Disconnect()
         {
             web3 = null;
@@ -169,7 +178,7 @@ namespace ApianCrypto
         public string EncodeUTF8AndSign(string addr, string msg)
         {
             if (addr.ToUpper() != ethAccount.Address.ToUpper())
-                throw new Exception("EncodeUTF8AndSign() address {addr} is no loaded account {ethAccount.Address}");
+                throw new Exception("EncodeUTF8AndSign() address {addr} is not loaded account: {ethAccount.Address}");
 
             return ethSigner.EncodeUTF8AndSign(msg,  new EthECKey(ethAccount.PrivateKey));
 

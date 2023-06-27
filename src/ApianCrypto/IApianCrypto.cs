@@ -29,7 +29,8 @@ namespace ApianCrypto
         string EncodeUTF8AndEcRecover(string message, string signature);
 
         bool IsConnected {get;}
-        void Connect(string provider, IApianCryptoClient client = null); // provider is probably a url
+        void Connect(string providerString, IApianCryptoClient client = null); // provider is probably a url
+        void Connect(Object provider, IApianCryptoClient client = null);
         void Disconnect();
 
         // SINGLE_THREADED API
