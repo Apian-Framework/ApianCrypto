@@ -59,7 +59,8 @@ namespace ApianCrypto
             callbackClient = client;
             web3 = provider as Web3;
 #if UNITY_2019_1_OR_NEWER
-            unityHelper.SetupConnection(providerURL, client);
+        // TODO: look into this - non-url providers
+        throw new Exception("Unity build can only connect using a provider URL");
 #endif
         }
 
