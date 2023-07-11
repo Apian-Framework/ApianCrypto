@@ -147,15 +147,15 @@ namespace ApianCrypto
             return CurrentAccountAddress;
         }
 
-        public string SetAccountFromJson(string password, string acctJson)
+        public string SetAccountFromKeystore(string password, string keyStoreJson)
         {
             var keyStoreService = new Nethereum.KeyStore.KeyStoreScryptService();
-            var key = keyStoreService.DecryptKeyStoreFromJson(password, acctJson);
+            var key = keyStoreService.DecryptKeyStoreFromJson(password, keyStoreJson);
             ethAccount = new Account(key);
             return CurrentAccountAddress;
         }
 
-        public string JsonForCurrentAccount(string password)
+        public string KeystoreForCurrentAccount(string password)
         {
             var keyStoreService = new Nethereum.KeyStore.KeyStoreScryptService();
             var scryptParams = new Nethereum.KeyStore.Model.ScryptParams{Dklen = 32, N = 262144, R = 1, P = 8};
@@ -165,7 +165,7 @@ namespace ApianCrypto
             return json;
         }
 
-        public (string, string) JsonForNewAccount(string password)
+        public (string, string) KeystoreForNewAccount(string password)
         {
            var keyStoreService = new Nethereum.KeyStore.KeyStoreScryptService();
             var ecKey = Nethereum.Signer.EthECKey.GenerateKey();

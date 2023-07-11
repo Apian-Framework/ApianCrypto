@@ -23,9 +23,9 @@ namespace ApianCrypto
         public abstract string CurrentAccountAddress {get; }
         public abstract string SetNewAccount();
         public abstract string SetAccountFromKey(byte[] privateKeyBytes);
-        public abstract string SetAccountFromJson(string password, string acctJson);
-        public abstract string JsonForCurrentAccount(string password);
-        public abstract (string,string) JsonForNewAccount(string password);
+        public abstract string SetAccountFromKeystore(string password, string ksJson);
+        public abstract string KeystoreForCurrentAccount(string password);
+        public abstract (string,string) KeystoreForNewAccount(string password);
         public abstract string EncodeUTF8AndSign(string adddr, string msg);
         public abstract string EncodeUTF8AndEcRecover(string message, string signature);
         public abstract string HashString(string data);
