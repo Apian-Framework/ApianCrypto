@@ -22,7 +22,7 @@ namespace ApianCrypto
     {
         public abstract string CurrentAccountAddress {get; }
         public abstract string SetNewAccount();
-        public abstract string SetAccountFromKey(byte[] privateKeyBytes);
+        public abstract string SetAccountFromKey(string privateKeyHex);
         public abstract string SetAccountFromKeystore(string password, string ksJson);
         public abstract string KeystoreForCurrentAccount(string password);
         public abstract (string,string) KeystoreForNewAccount(string password);

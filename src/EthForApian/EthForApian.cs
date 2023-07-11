@@ -140,11 +140,16 @@ namespace ApianCrypto
             return CurrentAccountAddress;
         }
 
+        public string SetAccountFromKey(string privateKeyHex)
+        {
+            ethAccount = new Account(privateKeyHex);
+            return CurrentAccountAddress;
+        }
+
         public string SetAccountFromKey(byte[] privateKeyBytes)
         {
             string pkStr = System.Text.Encoding.UTF8.GetString(privateKeyBytes);
-            ethAccount = new Account(pkStr);
-            return CurrentAccountAddress;
+            return SetAccountFromKey(pkStr);
         }
 
         public string SetAccountFromKeystore(string password, string keyStoreJson)

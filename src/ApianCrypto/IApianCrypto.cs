@@ -19,7 +19,8 @@ namespace ApianCrypto
 
         string CurrentAccountAddress {get; }
         string SetNewAccount(); // creates and sets internally
-        string SetAccountFromKey(byte[] privateKeyBytes);
+        string SetAccountFromKey(string privateKeyHex);
+
         string SetAccountFromKeystore(string password, string ksJson);
         string KeystoreForCurrentAccount(string password);
         (string,string) KeystoreForNewAccount(string password); // ( address, json)
