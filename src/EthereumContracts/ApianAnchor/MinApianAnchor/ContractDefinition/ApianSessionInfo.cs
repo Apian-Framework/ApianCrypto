@@ -19,5 +19,7 @@ namespace ApianAnchor.Contracts.MinApianAnchor.ContractDefinition
         public virtual string Creator { get; set; }
         [Parameter("string", "apianGroupType", 4)]
         public virtual string ApianGroupType { get; set; }
+        [Parameter("string", "genesisHash", 5)]
+        public virtual string GenesisHash { get; set; }
     }
 }

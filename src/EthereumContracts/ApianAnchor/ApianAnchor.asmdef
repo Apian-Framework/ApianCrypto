@@ -1,0 +1,30 @@
+{
+    "name": "ApianAnchor",
+    "rootNamespace": "",
+    "references": [
+        "ApianCrypto",
+        "UniLog"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Nethereum.Web3.dll",
+        "Nethereum.JsonRpc.Client.dll",
+        "Microsoft.Extensions.Logging.Abstractions.dll",
+        "Nethereum.RPC.dll",
+        "Nethereum.Signer.dll",
+        "Nethereum.Accounts.dll",
+        "Nethereum.KeyStore.dll",
+        "Nethereum.Hex.dll",
+        "Nethereum.Contracts.dll",
+        "Nethereum.Unity.dll",
+        "Newtonsoft.Json.dll",
+        "Nethereum.ABI.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

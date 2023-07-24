@@ -13,6 +13,7 @@ struct ApianSessionInfo {
     string name;
     address creator; // is a proxy account
     string apianGroupType;
+    string genesisHash;
 }
 
 struct ApianEpoch {
@@ -28,7 +29,6 @@ struct ApianEpoch {
 
 struct ApianSession {
     ApianSessionInfo info;
-
     uint256[] epochNums; // so we can iterate over the mapping
     mapping( uint256 => ApianEpoch) epochMapByNum;
 }
@@ -42,19 +42,14 @@ contract MinApianAnchor  {
     event SessionRegistered( string sessionId, address registeredBy); // Event
     event EpochReported( string sessionId, uint256 epochNum, address reportedBy); // Event
 
+    string public constant version = "1.1.0";
+
     string[] sessionIds; // use to iterate over session map or check how many.
     mapping(string => ApianSession) sessionMapById;
 
-
     constructor() {}
 
-    function registerSession(
-        ApianSessionInfo calldata sessInfo,
-        uint64 epochNum, // genesis epoch data (probably zeroes except for state hash)
-        uint64 apianTime,
-        uint64 cmdSeqNumber,
-        string calldata stateHash
-    ) external {
+    function registerSession(ApianSessionInfo calldata sessInfo ) external {
 
         ApianSession storage newSess = sessionMapById[sessInfo.id];
         if (newSess.info.creator != address(0)) {
@@ -66,23 +61,10 @@ contract MinApianAnchor  {
             id: sessInfo.id,
             name: sessInfo.name,
             creator: sessInfo.creator,
-            apianGroupType: sessInfo.apianGroupType
+            apianGroupType: sessInfo.apianGroupType,
+            genesisHash: sessInfo.genesisHash
         });
-
-        ApianEpoch memory epoch = ApianEpoch({
-            sessionId: sessInfo.id,
-            epochNum: epochNum,
-            endApianTime: apianTime,
-            endCmdSeqNumber: cmdSeqNumber,
-            endStateHash: stateHash,
-            proxyAddrs: new address[](0),
-            proxyFlags: new uint8[](0),
-            proxySigs: new bytes[](0)
-        });
-
         newSess.info = newSessInfo;
-        newSess.epochNums.push(epochNum);
-        newSess.epochMapByNum[epochNum] = epoch;
 
         emit SessionRegistered(sessInfo.id, msg.sender); // Event
     }

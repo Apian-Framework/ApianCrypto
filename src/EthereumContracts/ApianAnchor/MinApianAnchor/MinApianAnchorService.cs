@@ -107,26 +107,18 @@ namespace ApianAnchor.Contracts.MinApianAnchor
              return ContractHandler.SendRequestAndWaitForReceiptAsync(registerSessionFunction, cancellationToken);
         }
 
-        public Task<string> RegisterSessionRequestAsync(ApianSessionInfo sessInfo, ulong epochNum, ulong apianTime, ulong cmdSeqNumber, string stateHash)
+        public Task<string> RegisterSessionRequestAsync(ApianSessionInfo sessInfo)
         {
             var registerSessionFunction = new RegisterSessionFunction();
                 registerSessionFunction.SessInfo = sessInfo;
-                registerSessionFunction.EpochNum = epochNum;
-                registerSessionFunction.ApianTime = apianTime;
-                registerSessionFunction.CmdSeqNumber = cmdSeqNumber;
-                registerSessionFunction.StateHash = stateHash;
             
              return ContractHandler.SendRequestAsync(registerSessionFunction);
         }
 
-        public Task<TransactionReceipt> RegisterSessionRequestAndWaitForReceiptAsync(ApianSessionInfo sessInfo, ulong epochNum, ulong apianTime, ulong cmdSeqNumber, string stateHash, CancellationTokenSource cancellationToken = null)
+        public Task<TransactionReceipt> RegisterSessionRequestAndWaitForReceiptAsync(ApianSessionInfo sessInfo, CancellationTokenSource cancellationToken = null)
         {
             var registerSessionFunction = new RegisterSessionFunction();
                 registerSessionFunction.SessInfo = sessInfo;
-                registerSessionFunction.EpochNum = epochNum;
-                registerSessionFunction.ApianTime = apianTime;
-                registerSessionFunction.CmdSeqNumber = cmdSeqNumber;
-                registerSessionFunction.StateHash = stateHash;
             
              return ContractHandler.SendRequestAndWaitForReceiptAsync(registerSessionFunction, cancellationToken);
         }
@@ -155,6 +147,17 @@ namespace ApianAnchor.Contracts.MinApianAnchor
                 reportEpochFunction.Epoch = epoch;
             
              return ContractHandler.SendRequestAndWaitForReceiptAsync(reportEpochFunction, cancellationToken);
+        }
+
+        public Task<string> VersionQueryAsync(VersionFunction versionFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<VersionFunction, string>(versionFunction, blockParameter);
+        }
+
+        
+        public Task<string> VersionQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<VersionFunction, string>(null, blockParameter);
         }
     }
 }
