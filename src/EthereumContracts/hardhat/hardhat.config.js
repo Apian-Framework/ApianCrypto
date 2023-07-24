@@ -20,7 +20,7 @@ module.exports = {
   },
   solidity: "0.8.18",
   paths: {
-    sources: "./contracts",
+    sources: "../contracts",
     tests: "./hardhat-test",
     cache: "./hardhat-cache",
     artifacts: "./hardhat-artifacts"
