@@ -4,7 +4,7 @@
     "references": [
         "UniLog",
         "ApianCrypto",
-        ""
+        "ApianAnchor"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -21,7 +21,8 @@
         "Nethereum.Hex.dll",
         "Nethereum.Contracts.dll",
         "Nethereum.Unity.dll",
-        "Newtonsoft.Json.dll"
+        "Newtonsoft.Json.dll",
+        "Nethereum.ABI.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

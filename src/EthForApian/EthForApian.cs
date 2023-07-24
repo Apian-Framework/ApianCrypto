@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using UniLog;
@@ -7,6 +8,8 @@ using Nethereum.Web3.Accounts;
 using Nethereum.Signer;
 using Nethereum.Hex.HexConvertors.Extensions;
 
+using ApianAnchor.Contracts.MinApianAnchor;
+using ApianAnchor.Contracts.MinApianAnchor.ContractDefinition;
 
 #if !SINGLE_THREADED
 using System.Threading.Tasks;
@@ -16,16 +19,20 @@ namespace ApianCrypto
 {
     public class EthForApian : IApianCrypto
     {
-
         protected Web3 web3;
         protected Account ethAccount;
+        protected string providerURL;
         protected EthereumMessageSigner ethSigner;
         protected IApianCryptoClient callbackClient; // only necessary for single-threaded operation
+        protected Dictionary<string, MinApianAnchorService> anchorsByContractAddr;
+        protected Dictionary<string, MinApianAnchorService> anchorsBySessionId;
+        protected Dictionary<string, string> contractAddrsBySessionId;
+
+        public UniLogger logger;
 
 #if UNITY_2019_1_OR_NEWER
         protected EthForApianUnityHelper unityHelper;
 #endif
-
         public bool IsConnected => web3 != null;
         public string CurrentAccountAddress => ethAccount?.Address;
 
@@ -36,6 +43,10 @@ namespace ApianCrypto
 
         protected EthForApian()
         {
+            logger = UniLogger.GetLogger("ApianCrypto");
+            anchorsByContractAddr = new Dictionary<string, MinApianAnchorService>();
+            anchorsBySessionId = new Dictionary<string, MinApianAnchorService>();
+            contractAddrsBySessionId = new Dictionary<string, string>();
             ethSigner = new EthereumMessageSigner();
 
 #if UNITY_2019_1_OR_NEWER
@@ -45,20 +56,27 @@ namespace ApianCrypto
         }
 
         // Connection
-        public void Connect(string providerURL, IApianCryptoClient client=null)
+        public void Connect(string _providerURL, IApianCryptoClient client=null)
         {
+            providerURL = _providerURL;
             callbackClient = client;
-            web3 = new Web3(providerURL);
+            if (ethAccount != null)
+                web3 = new Web3( ethAccount, providerURL );
+            else {
+                web3 = new Web3(providerURL);
+                throw new Exception("No account loaded");
+            }
 #if UNITY_2019_1_OR_NEWER
-            unityHelper.SetupConnection(providerURL, client);
+            unityHelper.SetupConnection(providerURL, ethAccount, client);
 #endif
         }
 
-        public void Connect(Object provider, IApianCryptoClient client = null)
+        public void Connect(Object provider,  IApianCryptoClient client = null)
         {
             callbackClient = client;
             web3 = provider as Web3;
-#if UNITY_2019_1_OR_NEWER
+            throw new Exception("Why is this firing?");
+ #if UNITY_2019_1_OR_NEWER
         // TODO: look into this - non-url providers
         throw new Exception("Unity build can only connect using a provider URL");
 #endif
@@ -69,7 +87,7 @@ namespace ApianCrypto
             web3 = null;
             callbackClient = null;
 #if UNITY_2019_1_OR_NEWER
-            unityHelper.SetupConnection(null, null);
+            unityHelper.SetupConnection(null, null, null);
 #endif
         }
 
@@ -148,7 +166,7 @@ namespace ApianCrypto
 
         public string SetAccountFromKey(byte[] privateKeyBytes)
         {
-            string pkStr = System.Text.Encoding.UTF8.GetString(privateKeyBytes);
+            string pkStr =  BitConverter.ToString(privateKeyBytes).Replace("-", "") ; // System.Text.Encoding.UTF8.GetString(privateKeyBytes);
             return SetAccountFromKey(pkStr);
         }
 
@@ -200,10 +218,151 @@ namespace ApianCrypto
         {
             return ethSigner.Hash(Encoding.UTF8.GetBytes(str)).ToHex();
         }
+
+        // Session Anchor stuff (ISessionAnchor)
+
+        public void AddSessionAnchorService(string sessionId, string contractAddr)
+        {
+
+            if (contractAddr == null)
+            {
+                throw new Exception("AddSessionAnchorService(): ContractAddr cannot be null");
+            }
+
+            // No session ID is a special case for when you want to do requests from contracts that you aren.t talking to.
+
+            if (sessionId == null)
+            {
+                if (!anchorsByContractAddr.ContainsKey(contractAddr))
+                {
+                    logger.Info($"AddSessionAnchorService(): Creating sessionless anchor: {contractAddr}");
+                    anchorsByContractAddr[contractAddr]  = new MinApianAnchorService(web3, contractAddr);
+                    }
+                else
+                    logger.Info($"AddSessionAnchorService(): Sessionless anchor exists: {contractAddr}");
+                return;
+            }
+
+            // Normal case with session Id
+            if (anchorsBySessionId.ContainsKey(sessionId))
+            {
+                logger.Warn($"AddSessionAnchorService(): Anchor for session: {sessionId} alreadtexists");
+                return;
+            }
+
+            if (!anchorsByContractAddr.ContainsKey(contractAddr))
+            {
+                // Create one for this contract
+                anchorsByContractAddr[contractAddr]  = new MinApianAnchorService(web3, contractAddr);
+            }
+
+            anchorsBySessionId[sessionId] = anchorsByContractAddr[contractAddr];
+            contractAddrsBySessionId[sessionId] = contractAddr;
+            logger.Verbose($"AddSessionAnchorService(): Anchor created for (session, contract): ({sessionId}, {contractAddr})");
+        }
+
+        public void RegisterSession(string sessionId, AnchorSessionInfo sessInfo)
+        {
+#if UNITY_2019_1_OR_NEWER
+            if (callbackClient == null)
+                throw new Exception("No IApianCryptoClient specified");
+
+            if (anchorsBySessionId.ContainsKey(sessionId)) {
+                unityHelper.DoRegisterSession(contractAddrsBySessionId[sessionId],  sessInfo);
+            } else {
+                logger.Error($"No anchor contract for session: {sessionId}");
+            }
+#else
+            throw new Exception("Single-threaded RegisterSession() requires Unity3D");
+#endif
+
+        }
+
+#if !SINGLE_THREADED
+        public async Task<long> GetContractSessionCountAsync(string sessionId, string contractAddr = null)
+        {
+            // If contract addr is non-null then it is queried, regardless of session Id
+            // Otherwise the session's contract is queried
+            // There DOES already need to be an entry for he contract addr.
+            if (contractAddr != null) {
+                if (anchorsByContractAddr.ContainsKey(contractAddr)) {
+                    return await anchorsByContractAddr[contractAddr].GetContractSessionCountAsync();
+                } else {
+                    logger.Error($"No anchor for contract: {contractAddr}");
+                }
+            } else {
+                if (anchorsBySessionId.ContainsKey(sessionId)) {
+                    return await anchorsBySessionId[sessionId].GetContractSessionCountAsync();
+                } else {
+                    logger.Error($"No anchor for session: {sessionId}");
+                }
+            }
+            return 0; // TODO: Define ApianCrypto exceptions and handle 'em
+        }
+
+        public async Task<List<string>> GetContractSessionIdsAsync(string sessionId, string contractAddr = null)
+        {
+            // Another contract-wide query. See above for details
+            if (contractAddr != null) {
+                if (anchorsByContractAddr.ContainsKey(contractAddr)) {
+                    return await anchorsByContractAddr[contractAddr].GetContractSessionIdsAsync();
+                } else {
+                    logger.Error($"No anchor for contract: {contractAddr}");
+                }
+            } else {
+                if (anchorsBySessionId.ContainsKey(sessionId)) {
+                    return await anchorsBySessionId[sessionId].GetContractSessionIdsAsync();
+                } else {
+                    logger.Error($"No anchor for session: {sessionId}");
+                }
+            }
+            return null; // TODO: Define ApianCrypto exceptions and handle 'em
+        }
+
+        public async Task<(AnchorSessionInfo, IList<long>)> GetSessionDataAsync(string sessionId)
+        {
+            // returns a (sessionInfo, List<long> epochNums) tuple
+            if (anchorsBySessionId.ContainsKey(sessionId)) {
+                return await anchorsBySessionId[sessionId].GetSessionDataAsync(sessionId);
+            } else {
+                logger.Error($"No anchor for session: {sessionId}");
+            }
+            return (null, null);
+        }
+
+        public async Task<AnchorSessionEpoch> GetSessionEpochAsync( string sessionId, long epochNum)
+        {
+            if (anchorsBySessionId.ContainsKey(sessionId)) {
+                return await anchorsBySessionId[sessionId].GetSessionEpochAsync(sessionId, epochNum);
+            } else {
+                logger.Error($"No anchor for session: {sessionId}");
+            }
+            return null;
+        }
+
+        public async Task<string> RegisterSessionAsync(string sessionId, AnchorSessionInfo sessInfo)
+        {
+            if (anchorsBySessionId.ContainsKey(sessionId)) {
+                return await anchorsBySessionId[sessionId].RegisterSessionAsync( sessInfo);
+            } else {
+                logger.Error($"No anchor for session: {sessionId}");
+            }
+            return null;
+        }
+
+        public async Task<string> ReportEpochAsync(string sessionId, AnchorSessionEpoch epoch)
+        {
+          if (anchorsBySessionId.ContainsKey(sessionId)) {
+                return await anchorsBySessionId[sessionId].ReportEpochAsync(epoch);
+            } else {
+                logger.Error($"No anchor for session: {sessionId}");
+            }
+            return null;
+        }
+
+#endif
+
+
     }
-
-
-
-
 
 }

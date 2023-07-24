@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 #if !SINGLE_THREADED
 using System.Threading.Tasks;
 #endif
@@ -15,12 +16,13 @@ namespace ApianCrypto
         public BlockchainInfo() {} // default ctor for NewtonSoft
     }
 
+
+
     // TODO: This might ought to go away if there doesn't turn out to be any implementation-independent
     // common code
 
     public abstract class ApianCryptoBase : IApianCrypto
-    {
-        public abstract string CurrentAccountAddress {get; }
+    {   public abstract string CurrentAccountAddress {get; }
         public abstract string SetNewAccount();
         public abstract string SetAccountFromKey(string privateKeyHex);
         public abstract string SetAccountFromKeystore(string password, string ksJson);
@@ -40,11 +42,30 @@ namespace ApianCrypto
         public abstract void GetBlockNumber();
         public abstract void GetBalance(string addr);
 
+        public void AddSessionAnchorService( string sessionId, string contractAddr) { throw new NotImplementedException(); }
+
+        public void RegisterSession(string sessionId, AnchorSessionInfo sessInfo) { throw new NotImplementedException(); }
+
+
 #if !SINGLE_THREADED
         public abstract Task<int> GetChainIdAsync();
         public abstract Task<int> GetBlockNumberAsync();
         public abstract Task<int> GetBalanceAsync(string addr);
+
+    // ISessionANchor
+        public Task<long> GetContractSessionCountAsync(string sessionId, string contractAddr) {throw new NotImplementedException();  }
+
+        public Task<List<string>> GetContractSessionIdsAsync(string sessionId, string contractAddr) { throw new NotImplementedException(); }
+        public Task<(AnchorSessionInfo, IList<long>)> GetSessionDataAsync(string sessionId)  { throw new NotImplementedException(); }
+
+        public Task<AnchorSessionEpoch> GetSessionEpochAsync( string sessionId, long epochNum) { throw new NotImplementedException(); }
+        public Task<string> RegisterSessionAsync(string sessionId, AnchorSessionInfo sessInfo) { throw new NotImplementedException(); }
+        public Task<string> ReportEpochAsync(string sessionId, AnchorSessionEpoch epoch) { throw new NotImplementedException(); }
+
+
 #endif
+
+
 
     }
 }

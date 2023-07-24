@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+
 #if !SINGLE_THREADED
 using System.Threading.Tasks;
 #endif
@@ -11,12 +13,13 @@ namespace ApianCrypto
         void OnChainId(int chainId);
         void OnBlockNumber(int blockNumber);
         void OnBalance(string addr, int balance);
+
+        void OnSessionRegistered(string sessId, string txHash);
     }
 
 
     public interface IApianCrypto
     {
-
         string CurrentAccountAddress {get; }
         string SetNewAccount(); // creates and sets internally
         string SetAccountFromKey(string privateKeyHex);
@@ -40,12 +43,31 @@ namespace ApianCrypto
         void GetBlockNumber();
         void GetBalance(string addr);
 
+        void AddSessionAnchorService(string sessionId, string contractAddr); // only 1 per session, but they can share a contract address
+
+        void RegisterSession(string sessionId, AnchorSessionInfo sessInfo);
+
+
 #if !SINGLE_THREADED
         Task<int> GetChainIdAsync();
         Task<int> GetBlockNumberAsync();
         Task<int> GetBalanceAsync(string addr);
+
+
+        // Session anchor methods
+        //
+        // The idea is that this single ApianCrypto instance is using the same account to talk to multiple SessionAnchor contracts.
+        // AddSessionAnchor() creates a new AnchorContractService each different contract and puts it a dictionary keyed by contract addr.
+        // It also makes a sessionID -> ContractService dict so calls made with a session Id talk to the right contract.
+        //
+        Task<long> GetContractSessionCountAsync(string sessionId, string contractAddr = null);
+        Task<List<string>> GetContractSessionIdsAsync(string sessionId, string contractAddr = null);
+        Task<(AnchorSessionInfo, IList<long>)> GetSessionDataAsync(string sessionId);
+        Task<AnchorSessionEpoch> GetSessionEpochAsync( string sessionId, long epochNum);
+        Task<string> RegisterSessionAsync(string sessionId, AnchorSessionInfo sessInfo);
+        Task<string> ReportEpochAsync(string sessionId, AnchorSessionEpoch epoch);
 #endif
 
-    }
 
+    }
 }
