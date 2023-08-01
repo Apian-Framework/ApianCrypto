@@ -7,9 +7,9 @@ using Nethereum.ABI.FunctionEncoding.Attributes;
 
 namespace ApianAnchor.Contracts.MinApianAnchor.ContractDefinition
 {
-    public partial class ApianSessionInfo : ApianSessionInfoBase { }
+    public partial class SessionInfo : SessionInfoBase { }
 
-    public class ApianSessionInfoBase 
+    public class SessionInfoBase 
     {
         [Parameter("string", "id", 1)]
         public virtual string Id { get; set; }

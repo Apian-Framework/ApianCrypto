@@ -8,7 +8,7 @@ uint8 constant PROXY_VALIDATOR = 0; // acct is a validator  player/validator is 
 uint8 constant PROXY_JOINED = 2; // acct is new in this epoch
 uint8 constant PROXY_LEFT = 4; // acct left during this epoch
 
-struct ApianSessionInfo {
+struct SessionInfo {
     string id;
     string name;
     address creator; // is a proxy account
@@ -28,7 +28,7 @@ struct ApianEpoch {
 }
 
 struct ApianSession {
-    ApianSessionInfo info;
+    SessionInfo info;
     uint256[] epochNums; // so we can iterate over the mapping
     mapping( uint256 => ApianEpoch) epochMapByNum;
 }
@@ -42,14 +42,15 @@ contract MinApianAnchor  {
     event SessionRegistered( string sessionId, address registeredBy); // Event
     event EpochReported( string sessionId, uint256 epochNum, address reportedBy); // Event
 
-    string public constant version = "1.1.0";
+    string public constant version = "1.2.0";
+    // 1.2.0 - renamed ApianSessionInfo to SessionInfo
 
     string[] sessionIds; // use to iterate over session map or check how many.
     mapping(string => ApianSession) sessionMapById;
 
     constructor() {}
 
-    function registerSession(ApianSessionInfo calldata sessInfo ) external {
+    function registerSession(SessionInfo calldata sessInfo ) external {
 
         ApianSession storage newSess = sessionMapById[sessInfo.id];
         if (newSess.info.creator != address(0)) {
@@ -57,7 +58,7 @@ contract MinApianAnchor  {
         }
         sessionIds.push(sessInfo.id); // new one
 
-        ApianSessionInfo memory newSessInfo = ApianSessionInfo({
+        SessionInfo memory newSessInfo = SessionInfo({
             id: sessInfo.id,
             name: sessInfo.name,
             creator: sessInfo.creator,
@@ -103,7 +104,7 @@ contract MinApianAnchor  {
 
     function getSessionInfo(string calldata sessionId)
         external view
-        returns (ApianSessionInfo memory info, uint256[] memory epochNums)
+        returns (SessionInfo memory info, uint256[] memory epochNums)
     {
         ApianSession storage sess = sessionMapById[sessionId];
         if (sess.info.creator == address(0)) {

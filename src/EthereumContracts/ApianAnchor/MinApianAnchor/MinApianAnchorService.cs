@@ -107,7 +107,7 @@ namespace ApianAnchor.Contracts.MinApianAnchor
              return ContractHandler.SendRequestAndWaitForReceiptAsync(registerSessionFunction, cancellationToken);
         }
 
-        public Task<string> RegisterSessionRequestAsync(ApianSessionInfo sessInfo)
+        public Task<string> RegisterSessionRequestAsync(SessionInfo sessInfo)
         {
             var registerSessionFunction = new RegisterSessionFunction();
                 registerSessionFunction.SessInfo = sessInfo;
@@ -115,7 +115,7 @@ namespace ApianAnchor.Contracts.MinApianAnchor
              return ContractHandler.SendRequestAsync(registerSessionFunction);
         }
 
-        public Task<TransactionReceipt> RegisterSessionRequestAndWaitForReceiptAsync(ApianSessionInfo sessInfo, CancellationTokenSource cancellationToken = null)
+        public Task<TransactionReceipt> RegisterSessionRequestAndWaitForReceiptAsync(SessionInfo sessInfo, CancellationTokenSource cancellationToken = null)
         {
             var registerSessionFunction = new RegisterSessionFunction();
                 registerSessionFunction.SessInfo = sessInfo;

@@ -33,7 +33,7 @@ namespace ApianEthContracts.Testing
         public const int  PROXY_LEFT = 4; // acct left during this epoch
 
         // Session A
-        public static ApianSessionInfo sessionAInfo = new ApianSessionInfo()
+        public static SessionInfo sessionAInfo = new ApianSessionInfo()
         {
             Id = "ApricotSessionId", // virtual string Id { get; set; }
             Name = "ApricotSessionName", //  public virtual string Name { get; set; }
@@ -59,7 +59,7 @@ namespace ApianEthContracts.Testing
 
 
 
-        public static ApianSessionInfo sessionBInfo = new ApianSessionInfo()
+        public static SessionInfo sessionBInfo = new ApianSessionInfo()
         {
             "BerrySessionId", // virtual string Id { get; set; }
             "BerrySessionName", //  public virtual string Name { get; set; }

@@ -3,16 +3,16 @@ using ApianCrypto;
 
 namespace ApianAnchor.Contracts.MinApianAnchor.ContractDefinition
 {
-    public partial class ApianSessionInfo
+    public partial class SessionInfo
     {
         public AnchorSessionInfo ToApian()
         {
             return new AnchorSessionInfo( Id , Name, Creator, ApianGroupType, GenesisHash);
         }
 
-        public static ApianSessionInfo FromApian(AnchorSessionInfo asi)
+        public static SessionInfo FromApian(AnchorSessionInfo asi)
         {
-            var solInfo =  new ApianSessionInfo();
+            var solInfo =  new SessionInfo();
             solInfo.Id = asi.Id;
             solInfo.Name = asi.Name;
             solInfo.Creator = asi.Creator;

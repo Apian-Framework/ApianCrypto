@@ -16,7 +16,7 @@ namespace ApianAnchor.Contracts.MinApianAnchor.ContractDefinition
     public partial class ApianEpoch
     {
 
-        public static ApianEpoch FromApian(AnchorSessionEpoch se)
+        public static ApianEpoch FromApian(ApianEpochReport se)
         {
             var epoch = new ApianEpoch();
             epoch.SessionId = se.SessionId;
@@ -32,9 +32,9 @@ namespace ApianAnchor.Contracts.MinApianAnchor.ContractDefinition
             return epoch;
         }
 
-        public AnchorSessionEpoch ToApian()
+        public ApianEpochReport ToApian()
         {
-            return new AnchorSessionEpoch( SessionId, (long)EpochNum, (long)EndApianTime, (long)EndCmdSeqNumber,
+            return new ApianEpochReport( SessionId, (long)EpochNum, (long)EndApianTime, (long)EndCmdSeqNumber,
                 EndStateHash, ProxyAddrs, ProxyFlags, ProxySigs.Select( (ba) =>  BitConverter.ToString(ba).Replace("-", "") ).ToList() );
         }
 
