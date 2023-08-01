@@ -278,7 +278,26 @@ namespace ApianCrypto
 
         }
 
+
+        public void ReportEpoch(string sessionId, ApianEpochReport epoch)
+        {
+#if UNITY_2019_1_OR_NEWER
+            if (callbackClient == null)
+                throw new Exception("No IApianCryptoClient specified");
+
+            if (anchorsBySessionId.ContainsKey(sessionId)) {
+                unityHelper.DoReportEpoch(contractAddrsBySessionId[sessionId],  epoch);
+            } else {
+                logger.Error($"No anchor contract for session: {sessionId}");
+            }
+#else
+            throw new Exception("Single-threaded ReportEpoch() requires Unity3D");
+#endif
+        }
+
+
 #if !SINGLE_THREADED
+
         public async Task<long> GetContractSessionCountAsync(string sessionId, string contractAddr = null)
         {
             // If contract addr is non-null then it is queried, regardless of session Id
@@ -330,7 +349,7 @@ namespace ApianCrypto
             return (null, null);
         }
 
-        public async Task<AnchorSessionEpoch> GetSessionEpochAsync( string sessionId, long epochNum)
+        public async Task<ApianEpochReport> GetSessionEpochAsync( string sessionId, long epochNum)
         {
             if (anchorsBySessionId.ContainsKey(sessionId)) {
                 return await anchorsBySessionId[sessionId].GetSessionEpochAsync(sessionId, epochNum);
@@ -350,7 +369,7 @@ namespace ApianCrypto
             return null;
         }
 
-        public async Task<string> ReportEpochAsync(string sessionId, AnchorSessionEpoch epoch)
+        public async Task<string> ReportEpochAsync(string sessionId, ApianEpochReport epoch)
         {
           if (anchorsBySessionId.ContainsKey(sessionId)) {
                 return await anchorsBySessionId[sessionId].ReportEpochAsync(epoch);

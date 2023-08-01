@@ -27,7 +27,7 @@ namespace ApianCrypto
         }
     }
 
-    public class AnchorSessionEpoch
+    public class ApianEpochReport
     {
         public const int  PROXY_PLAYER = 1; // acct is a player
         public const int  PROXY_VALIDATOR = 0; // acct is a validator  player/validator is exclusive
@@ -43,7 +43,7 @@ namespace ApianCrypto
         public List<byte> ProxyFlags { get; set; }
         public List<string> ProxySigs { get; set; }
 
-        public AnchorSessionEpoch(string sessionId, long epochNum, long endApianTime, long endCmdSeqNumber,
+        public ApianEpochReport(string sessionId, long epochNum, long endApianTime, long endCmdSeqNumber,
             string endStateHash, List<string> proxyAddrs, List<byte> proxyFlags, List<string> proxySigs)
         {
             SessionId = sessionId;

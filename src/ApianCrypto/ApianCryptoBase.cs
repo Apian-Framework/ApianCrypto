@@ -42,10 +42,10 @@ namespace ApianCrypto
         public abstract void GetBlockNumber();
         public abstract void GetBalance(string addr);
 
+        public void ValidateAnchorVersion(string contractAddr) { throw new NotImplementedException(); }
         public void AddSessionAnchorService( string sessionId, string contractAddr) { throw new NotImplementedException(); }
-
         public void RegisterSession(string sessionId, AnchorSessionInfo sessInfo) { throw new NotImplementedException(); }
-
+        public void ReportEpoch(string sessionId, ApianEpochReport epoch) { throw new NotImplementedException(); }
 
 #if !SINGLE_THREADED
         public abstract Task<int> GetChainIdAsync();
@@ -53,14 +53,13 @@ namespace ApianCrypto
         public abstract Task<int> GetBalanceAsync(string addr);
 
     // ISessionANchor
+        public Task<(bool,string)> ValidateAnchorVersionAsync(string contractAddr) { throw new NotImplementedException(); }
         public Task<long> GetContractSessionCountAsync(string sessionId, string contractAddr) {throw new NotImplementedException();  }
-
         public Task<List<string>> GetContractSessionIdsAsync(string sessionId, string contractAddr) { throw new NotImplementedException(); }
         public Task<(AnchorSessionInfo, IList<long>)> GetSessionDataAsync(string sessionId)  { throw new NotImplementedException(); }
-
-        public Task<AnchorSessionEpoch> GetSessionEpochAsync( string sessionId, long epochNum) { throw new NotImplementedException(); }
+        public Task<ApianEpochReport> GetSessionEpochAsync( string sessionId, long epochNum) { throw new NotImplementedException(); }
         public Task<string> RegisterSessionAsync(string sessionId, AnchorSessionInfo sessInfo) { throw new NotImplementedException(); }
-        public Task<string> ReportEpochAsync(string sessionId, AnchorSessionEpoch epoch) { throw new NotImplementedException(); }
+        public Task<string> ReportEpochAsync(string sessionId, ApianEpochReport epoch) { throw new NotImplementedException(); }
 
 
 #endif

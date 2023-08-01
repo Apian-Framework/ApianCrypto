@@ -15,6 +15,7 @@ namespace ApianCrypto
         void OnBalance(string addr, int balance);
 
         void OnSessionRegistered(string sessId, string txHash);
+        void OnEpochReported(string sessId, long epochNum, string txHash);
     }
 
 
@@ -45,8 +46,8 @@ namespace ApianCrypto
 
         void AddSessionAnchorService(string sessionId, string contractAddr); // only 1 per session, but they can share a contract address
 
-        void RegisterSession(string sessionId, AnchorSessionInfo sessInfo);
-
+        void RegisterSession(string sessionId, AnchorSessionInfo sessInfo); // not async - really just for Unity WebGL
+        void ReportEpoch(string sessionId, ApianEpochReport epoch);  // Also for Unity WebGL (single thread)
 
 #if !SINGLE_THREADED
         Task<int> GetChainIdAsync();
@@ -63,9 +64,9 @@ namespace ApianCrypto
         Task<long> GetContractSessionCountAsync(string sessionId, string contractAddr = null);
         Task<List<string>> GetContractSessionIdsAsync(string sessionId, string contractAddr = null);
         Task<(AnchorSessionInfo, IList<long>)> GetSessionDataAsync(string sessionId);
-        Task<AnchorSessionEpoch> GetSessionEpochAsync( string sessionId, long epochNum);
+        Task<ApianEpochReport> GetSessionEpochAsync( string sessionId, long epochNum);
         Task<string> RegisterSessionAsync(string sessionId, AnchorSessionInfo sessInfo);
-        Task<string> ReportEpochAsync(string sessionId, AnchorSessionEpoch epoch);
+        Task<string> ReportEpochAsync(string sessionId, ApianEpochReport epoch);
 #endif
 
 

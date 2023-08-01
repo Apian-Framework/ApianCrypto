@@ -17,6 +17,8 @@ using Newtonsoft.Json;
 using ApianAnchor.Contracts.MinApianAnchor;
 using ApianAnchor.Contracts.MinApianAnchor.ContractDefinition;
 
+
+
 #if UNITY_2019_1_OR_NEWER
 
 using UnityEngine;
@@ -115,23 +117,43 @@ namespace ApianCrypto
         public IEnumerator RegisterSessionCoRo(string contractAddr, AnchorSessionInfo sessInfo)
         {
             var transactionRequest = new TransactionSignedUnityRequest(ProviderURL, ethAccount.PrivateKey);
-
             transactionRequest.UseLegacyAsDefault = true;
-
             var transactionMessage = new RegisterSessionFunction
             {
-                 SessInfo = ApianSessionInfo.FromApian(sessInfo)
+                 SessInfo = SessionInfo.FromApian(sessInfo)
             };
-
             yield return transactionRequest.SignAndSendTransaction(transactionMessage, contractAddr);
 
+            if (transactionRequest.Exception!= null)
+                throw(transactionRequest.Exception);
+
             var transactionHash = transactionRequest.Result;
-
             Logger.Verbose("RegisterSession txn hash:" + transactionHash);
-
             CallbackClient.OnSessionRegistered(sessInfo.Id, transactionHash);
         }
 
+        public void DoReportEpoch(string contractAddr, ApianEpochReport epoch)
+        {
+            StartCoroutine(ReportEpochCoRo(contractAddr, epoch));
+        }
+
+        public IEnumerator ReportEpochCoRo(string contractAddr, ApianEpochReport epoch)
+        {
+            var transactionRequest = new TransactionSignedUnityRequest(ProviderURL, ethAccount.PrivateKey);
+            transactionRequest.UseLegacyAsDefault = true;
+            var transactionMessage = new ReportEpochFunction
+            {
+                 Epoch = ApianEpoch.FromApian(epoch)
+            };
+            yield return transactionRequest.SignAndSendTransaction(transactionMessage, contractAddr);
+
+            if (transactionRequest.Exception!= null)
+                throw(transactionRequest.Exception);
+
+            var transactionHash = transactionRequest.Result;
+            Logger.Verbose("ReportEpoch txn hash:" + transactionHash);
+            CallbackClient.OnEpochReported(epoch.SessionId, epoch.EpochNum, transactionHash);
+        }
 
     }
 }
