@@ -74,7 +74,7 @@ namespace ApianCrypto
             if (chainIdReq.Exception != null) {
                 UnityEngine.Debug.Log(chainIdReq.Exception.Message);
             }
-            CallbackClient.OnChainId((int)chainIdReq.Result.Value);
+            CallbackClient.OnChainId((int)chainIdReq.Result.Value, chainIdReq.Exception);
         }
 
         public void DoGetBlockNumber()
@@ -90,7 +90,7 @@ namespace ApianCrypto
             if (blockNumReq.Exception != null)
                 UnityEngine.Debug.Log(blockNumReq.Exception.Message);
 
-            CallbackClient.OnBlockNumber((int)blockNumReq.Result.Value);
+            CallbackClient.OnBlockNumber((int)blockNumReq.Result.Value, blockNumReq.Exception);
         }
 
         public void DoGetBalance(string acct)
@@ -106,7 +106,7 @@ namespace ApianCrypto
             if (balanceRequest.Exception != null)
                 UnityEngine.Debug.Log(balanceRequest.Exception.Message);
 
-            CallbackClient.OnBalance( acct, (int)balanceRequest.Result.Value);
+            CallbackClient.OnBalance( acct, (int)balanceRequest.Result.Value, balanceRequest.Exception);
         }
 
         public void DoRegisterSession(string contractAddr, AnchorSessionInfo sessInfo)
@@ -118,18 +118,22 @@ namespace ApianCrypto
         {
             var transactionRequest = new TransactionSignedUnityRequest(ProviderURL, ethAccount.PrivateKey);
             transactionRequest.UseLegacyAsDefault = true;
+
             var transactionMessage = new RegisterSessionFunction
             {
                  SessInfo = SessionInfo.FromApian(sessInfo)
             };
             yield return transactionRequest.SignAndSendTransaction(transactionMessage, contractAddr);
 
-            if (transactionRequest.Exception!= null)
-                throw(transactionRequest.Exception);
+            if (transactionRequest.Exception != null)
+            {
+                CallbackClient.OnSessionRegistered(sessInfo.Id, null, transactionRequest.Exception);
+                yield break; // bail
+            }
 
             var transactionHash = transactionRequest.Result;
-            Logger.Verbose("RegisterSession txn hash:" + transactionHash);
-            CallbackClient.OnSessionRegistered(sessInfo.Id, transactionHash);
+            Logger.Verbose($"RegisterSession txn hash: {transactionHash} Ex: {(transactionRequest.Exception?.Message)}");
+            CallbackClient.OnSessionRegistered(sessInfo.Id, transactionHash, transactionRequest.Exception);
         }
 
         public void DoReportEpoch(string contractAddr, ApianEpochReport epoch)
@@ -148,11 +152,14 @@ namespace ApianCrypto
             yield return transactionRequest.SignAndSendTransaction(transactionMessage, contractAddr);
 
             if (transactionRequest.Exception!= null)
-                throw(transactionRequest.Exception);
+            {
+                CallbackClient.OnEpochReported(epoch.SessionId, epoch.EpochNum, null, transactionRequest.Exception);
+                yield break;
+            }
 
             var transactionHash = transactionRequest.Result;
-            Logger.Verbose("ReportEpoch txn hash:" + transactionHash);
-            CallbackClient.OnEpochReported(epoch.SessionId, epoch.EpochNum, transactionHash);
+             Logger.Verbose($"ReportEpoch txn hash: {transactionHash} Ex: {(transactionRequest.Exception?.Message)}");
+            CallbackClient.OnEpochReported(epoch.SessionId, epoch.EpochNum, transactionHash, transactionRequest.Exception);
         }
 
     }

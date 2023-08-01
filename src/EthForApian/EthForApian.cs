@@ -44,15 +44,20 @@ namespace ApianCrypto
         protected EthForApian()
         {
             logger = UniLogger.GetLogger("ApianCrypto");
-            anchorsByContractAddr = new Dictionary<string, MinApianAnchorService>();
-            anchorsBySessionId = new Dictionary<string, MinApianAnchorService>();
-            contractAddrsBySessionId = new Dictionary<string, string>();
+            ResetContractAnchors();
             ethSigner = new EthereumMessageSigner();
 
 #if UNITY_2019_1_OR_NEWER
             unityHelper = EthForApianUnityHelper.Create();
 #endif
 
+        }
+
+        protected void ResetContractAnchors()
+        {
+            anchorsByContractAddr = new Dictionary<string, MinApianAnchorService>();
+            anchorsBySessionId = new Dictionary<string, MinApianAnchorService>();
+            contractAddrsBySessionId = new Dictionary<string, string>();
         }
 
         // Connection
@@ -100,8 +105,14 @@ namespace ApianCrypto
 #elif !SINGLE_THREADED
             Task.Run( async () =>
                 {
-                    BigInteger bi =  await web3.Eth.ChainId.SendRequestAsync();
-                    callbackClient.OnChainId((int)bi);
+                    BigInteger bi;
+                    Exception err = null;
+                    try {
+                         bi =  await web3.Eth.ChainId.SendRequestAsync();
+                    } catch (Exception e) {
+                        err = e;
+                    }
+                    callbackClient.OnChainId((int)bi, err);
                 });
 #else
             #warning Single-threaded non-Unity GetChainId() not implmented

@@ -7,15 +7,17 @@ using System.Threading.Tasks;
 
 namespace ApianCrypto
 {
-
+    // Passing back any exceptions that occur is a pretty clean way to get around all of the messiness
+    // involved with tasks and coroutines and all of the "how/where to catch 'em" questions. This
+    // is expecially the case in Unity-platformed builds.
     public interface IApianCryptoClient
     {
-        void OnChainId(int chainId);
-        void OnBlockNumber(int blockNumber);
-        void OnBalance(string addr, int balance);
+        void OnChainId(int chainId, Exception ex);
+        void OnBlockNumber(int blockNumber, Exception ex);
+        void OnBalance(string addr, int balance, Exception ex);
 
-        void OnSessionRegistered(string sessId, string txHash);
-        void OnEpochReported(string sessId, long epochNum, string txHash);
+        void OnSessionRegistered(string sessId, string txHash, Exception ex);
+        void OnEpochReported(string sessId, long epochNum, string txHash, Exception ex);
     }
 
 
