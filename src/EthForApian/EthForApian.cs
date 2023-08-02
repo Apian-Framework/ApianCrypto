@@ -61,13 +61,16 @@ namespace ApianCrypto
         }
 
         // Connection
-        public void Connect(string _providerURL, IApianCryptoClient client=null)
+        public void Connect(string _providerURL, long chainId, IApianCryptoClient client=null)
         {
             providerURL = _providerURL;
             callbackClient = client;
             if (ethAccount != null)
+            {
+                BigInteger biChainId = new BigInteger(chainId);
+                ethAccount = new Account(ethAccount.PrivateKey, biChainId); // FIXME: THis is a stupid way to do this
                 web3 = new Web3( ethAccount, providerURL );
-            else {
+            } else {
                 web3 = new Web3(providerURL);
                 throw new Exception("No account loaded");
             }

@@ -33,7 +33,7 @@ namespace ApianCrypto
         public abstract string HashString(string data);
 
         public abstract bool IsConnected {get;}
-        public abstract void Connect(string provider, IApianCryptoClient client=null);
+        public abstract void Connect(string provider, long chainId, IApianCryptoClient client=null);
         public abstract void Connect(Object provider, IApianCryptoClient client = null);
 
         public abstract void Disconnect();

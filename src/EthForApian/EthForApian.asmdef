@@ -22,7 +22,8 @@
         "Nethereum.Contracts.dll",
         "Nethereum.Unity.dll",
         "Newtonsoft.Json.dll",
-        "Nethereum.ABI.dll"
+        "Nethereum.ABI.dll",
+        "Nethereum.Model.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

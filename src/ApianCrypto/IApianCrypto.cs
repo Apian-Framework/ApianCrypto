@@ -36,7 +36,7 @@ namespace ApianCrypto
         string EncodeUTF8AndEcRecover(string message, string signature);
 
         bool IsConnected {get;}
-        void Connect(string providerString, IApianCryptoClient client = null); // provider is probably a url
+        void Connect(string providerString, long chainId, IApianCryptoClient client = null); // provider is probably a url
         void Connect(Object provider, IApianCryptoClient client = null);
         void Disconnect();
 
