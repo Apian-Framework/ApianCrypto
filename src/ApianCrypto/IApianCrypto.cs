@@ -40,16 +40,16 @@ namespace ApianCrypto
         void Connect(Object provider, IApianCryptoClient client = null);
         void Disconnect();
 
+        // TODO: get rid of the single-thread stuff
         // SINGLE_THREADED API
-
-        void GetChainId();
-        void GetBlockNumber();
-        void GetBalance(string addr);
+        //void GetChainId();
+        //void GetBlockNumber();
+        //void GetBalance(string addr);
 
         void AddSessionAnchorService(string sessionId, string contractAddr); // only 1 per session, but they can share a contract address
 
-        void RegisterSession(string sessionId, AnchorSessionInfo sessInfo); // not async - really just for Unity WebGL
-        void ReportEpoch(string sessionId, ApianEpochReport epoch);  // Also for Unity WebGL (single thread)
+        //void RegisterSession(string sessionId, AnchorSessionInfo sessInfo); // not async - really just for Unity WebGL
+        //void ReportEpoch(string sessionId, ApianEpochReport epoch);  // Also for Unity WebGL (single thread)
 
 #if !SINGLE_THREADED
         Task<int> GetChainIdAsync();

@@ -8,6 +8,10 @@ using Nethereum.Web3.Accounts;
 using Nethereum.Signer;
 using Nethereum.Hex.HexConvertors.Extensions;
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+using Nethereum.Unity.Rpc;
+#endif
+
 using ApianAnchor.Contracts.MinApianAnchor;
 using ApianAnchor.Contracts.MinApianAnchor.ContractDefinition;
 
@@ -30,9 +34,6 @@ namespace ApianCrypto
 
         public UniLogger logger;
 
-#if UNITY_2019_1_OR_NEWER
-        protected EthForApianUnityHelper unityHelper;
-#endif
         public bool IsConnected => web3 != null;
         public string CurrentAccountAddress => ethAccount?.Address;
 
@@ -46,10 +47,6 @@ namespace ApianCrypto
             logger = UniLogger.GetLogger("ApianCrypto");
             ResetContractAnchors();
             ethSigner = new EthereumMessageSigner();
-
-#if UNITY_2019_1_OR_NEWER
-            unityHelper = EthForApianUnityHelper.Create();
-#endif
 
         }
 
@@ -69,14 +66,15 @@ namespace ApianCrypto
             {
                 BigInteger biChainId = new BigInteger(chainId);
                 ethAccount = new Account(ethAccount.PrivateKey, biChainId); // FIXME: THis is a stupid way to do this
+#if UNITY_WEBGL && !UNITY_EDITOR
+                web3 = new Web3(ethAccount, new UnityWebRequestRpcTaskClient(new Uri(providerURL)));
+#else
                 web3 = new Web3( ethAccount, providerURL );
+#endif
             } else {
-                web3 = new Web3(providerURL);
                 throw new Exception("No account loaded");
             }
-#if UNITY_2019_1_OR_NEWER
-            unityHelper.SetupConnection(providerURL, ethAccount, client);
-#endif
+
         }
 
         public void Connect(Object provider,  IApianCryptoClient client = null)
@@ -84,62 +82,29 @@ namespace ApianCrypto
             callbackClient = client;
             web3 = provider as Web3;
             throw new Exception("Why is this firing?");
- #if UNITY_2019_1_OR_NEWER
-        // TODO: look into this - non-url providers
-        throw new Exception("Unity build can only connect using a provider URL");
-#endif
         }
 
         public void Disconnect()
         {
             web3 = null;
             callbackClient = null;
-#if UNITY_2019_1_OR_NEWER
-            unityHelper.SetupConnection(null, null, null);
-#endif
+            ResetContractAnchors();
         }
 
         public void GetChainId()
         {
-            if (callbackClient == null)
-                throw new Exception("No IApianCryptoClient specified");
-#if UNITY_2019_1_OR_NEWER
-            unityHelper.DoGetChainId();
-#elif !SINGLE_THREADED
-            Task.Run( async () =>
-                {
-                    BigInteger bi;
-                    Exception err = null;
-                    try {
-                         bi =  await web3.Eth.ChainId.SendRequestAsync();
-                    } catch (Exception e) {
-                        err = e;
-                    }
-                    callbackClient.OnChainId((int)bi, err);
-                });
-#else
-            #warning Single-threaded non-Unity GetChainId() not implmented
             throw new Exception("Single-threaded non-Unity GetChainId() not implmented");
-#endif
-
         }
 
         public void GetBlockNumber()
         {
-            if (callbackClient == null)
-                throw new Exception("No IApianCryptoClient specified");
-#if UNITY_2019_1_OR_NEWER
-            unityHelper.DoGetBlockNumber();
-#endif
+            throw new Exception("Single-threaded GetBlockNumber() not implmented");
         }
 
         public void GetBalance(string addr)
         {
-            if (callbackClient == null)
-                throw new Exception("No IApianCryptoClient specified");
-#if UNITY_2019_1_OR_NEWER
-            unityHelper.DoGetBalance(addr);
-#endif
+            throw new Exception("Single-threaded GetBalance() not implmented");
+
         }
 
 #if !SINGLE_THREADED
@@ -277,36 +242,17 @@ namespace ApianCrypto
 
         public void RegisterSession(string sessionId, AnchorSessionInfo sessInfo)
         {
-#if UNITY_2019_1_OR_NEWER
-            if (callbackClient == null)
-                throw new Exception("No IApianCryptoClient specified");
 
-            if (anchorsBySessionId.ContainsKey(sessionId)) {
-                unityHelper.DoRegisterSession(contractAddrsBySessionId[sessionId],  sessInfo);
-            } else {
-                logger.Error($"No anchor contract for session: {sessionId}");
-            }
-#else
-            throw new Exception("Single-threaded RegisterSession() requires Unity3D");
-#endif
+            throw new Exception("No Single-threaded RegisterSession()");
 
         }
 
 
         public void ReportEpoch(string sessionId, ApianEpochReport epoch)
         {
-#if UNITY_2019_1_OR_NEWER
-            if (callbackClient == null)
-                throw new Exception("No IApianCryptoClient specified");
 
-            if (anchorsBySessionId.ContainsKey(sessionId)) {
-                unityHelper.DoReportEpoch(contractAddrsBySessionId[sessionId],  epoch);
-            } else {
-                logger.Error($"No anchor contract for session: {sessionId}");
-            }
-#else
-            throw new Exception("Single-threaded ReportEpoch() requires Unity3D");
-#endif
+            throw new Exception("No Single-threaded ReportEpoch() ");
+
         }
 
 
