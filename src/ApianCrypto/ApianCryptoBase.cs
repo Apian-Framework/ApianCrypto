@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-#if !SINGLE_THREADED
 using System.Threading.Tasks;
-#endif
+
 
 namespace ApianCrypto
 {
@@ -38,21 +37,21 @@ namespace ApianCrypto
 
         public abstract void Disconnect();
 
+        // TODO: do we need these syncronous/callback versions?
+        // I'm not even sure they work.
         public abstract void GetChainId();
         public abstract void GetBlockNumber();
         public abstract void GetBalance(string addr);
-
         public void ValidateAnchorVersion(string contractAddr) { throw new NotImplementedException(); }
         public void AddSessionAnchorService( string sessionId, string contractAddr) { throw new NotImplementedException(); }
         public void RegisterSession(string sessionId, AnchorSessionInfo sessInfo) { throw new NotImplementedException(); }
         public void ReportEpoch(string sessionId, ApianEpochReport epoch) { throw new NotImplementedException(); }
 
-#if !SINGLE_THREADED
         public abstract Task<int> GetChainIdAsync();
         public abstract Task<int> GetBlockNumberAsync();
         public abstract Task<int> GetBalanceAsync(string addr);
 
-    // ISessionANchor
+        // ISessionANchor
         public Task<(bool,string)> ValidateAnchorVersionAsync(string contractAddr) { throw new NotImplementedException(); }
         public Task<long> GetContractSessionCountAsync(string sessionId, string contractAddr) {throw new NotImplementedException();  }
         public Task<List<string>> GetContractSessionIdsAsync(string sessionId, string contractAddr) { throw new NotImplementedException(); }
@@ -60,10 +59,6 @@ namespace ApianCrypto
         public Task<ApianEpochReport> GetSessionEpochAsync( string sessionId, long epochNum) { throw new NotImplementedException(); }
         public Task<string> RegisterSessionAsync(string sessionId, AnchorSessionInfo sessInfo) { throw new NotImplementedException(); }
         public Task<string> ReportEpochAsync(string sessionId, ApianEpochReport epoch) { throw new NotImplementedException(); }
-
-
-#endif
-
 
 
     }

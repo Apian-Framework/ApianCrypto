@@ -3,17 +3,14 @@ using System;
 using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
-#if !SINGLE_THREADED
 using System.Threading.Tasks;
-#endif
+
 
 using ApianCrypto;
 using ApianAnchor.Contracts.MinApianAnchor.ContractDefinition;
 
 namespace ApianAnchor.Contracts.MinApianAnchor
 {
-
-#if !SINGLE_THREADED
     public partial class MinApianAnchorService
     {
         // This adds the ApianCrypto side of the Nethereum-generated class
@@ -59,5 +56,4 @@ namespace ApianAnchor.Contracts.MinApianAnchor
         }
 
     }
-#endif // !SINGLE_THREADED
 }

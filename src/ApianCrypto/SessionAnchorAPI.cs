@@ -1,9 +1,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !SINGLE_THREADED
 using System.Threading.Tasks;
-#endif
 
 namespace ApianCrypto
 {
@@ -57,6 +55,5 @@ namespace ApianCrypto
         }
 
     }
-
 
 }

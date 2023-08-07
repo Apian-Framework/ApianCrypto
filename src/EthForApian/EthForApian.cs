@@ -15,9 +15,7 @@ using Nethereum.Unity.Rpc;
 using ApianAnchor.Contracts.MinApianAnchor;
 using ApianAnchor.Contracts.MinApianAnchor.ContractDefinition;
 
-#if !SINGLE_THREADED
 using System.Threading.Tasks;
-#endif
 
 namespace ApianCrypto
 {
@@ -107,7 +105,6 @@ namespace ApianCrypto
 
         }
 
-#if !SINGLE_THREADED
         public async Task<int> GetChainIdAsync()
         {
             BigInteger bi =   await web3.Eth.ChainId.SendRequestAsync();
@@ -125,9 +122,6 @@ namespace ApianCrypto
             BigInteger bi = await web3.Eth.GetBalance.SendRequestAsync(addr);
             return (int)bi;
         }
-
-#endif
-
 
         // Account
         public string SetNewAccount()
@@ -256,8 +250,6 @@ namespace ApianCrypto
         }
 
 
-#if !SINGLE_THREADED
-
         public async Task<long> GetContractSessionCountAsync(string sessionId, string contractAddr = null)
         {
             // If contract addr is non-null then it is queried, regardless of session Id
@@ -338,9 +330,6 @@ namespace ApianCrypto
             }
             return null;
         }
-
-#endif
-
 
     }
 
