@@ -8,6 +8,8 @@ using Nethereum.Web3.Accounts;
 using Nethereum.Signer;
 using Nethereum.Hex.HexConvertors.Extensions;
 
+using Newtonsoft.Json;
+
 #if UNITY_WEBGL && !UNITY_EDITOR
 using Nethereum.Unity.Rpc;
 #endif
@@ -324,6 +326,10 @@ namespace ApianCrypto
         public async Task<string> ReportEpochAsync(string sessionId, ApianEpochReport epoch)
         {
           if (anchorsBySessionId.ContainsKey(sessionId)) {
+
+            string js = JsonConvert.SerializeObject(epoch, Formatting.Indented);
+            logger.Info($"Reporting epoch {epoch.EpochNum}:\n{js}");
+
                 return await anchorsBySessionId[sessionId].ReportEpochAsync(epoch);
             } else {
                 logger.Error($"No anchor for session: {sessionId}");

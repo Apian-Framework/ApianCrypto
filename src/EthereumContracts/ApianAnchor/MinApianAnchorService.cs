@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-
 using ApianCrypto;
 using ApianAnchor.Contracts.MinApianAnchor.ContractDefinition;
 
@@ -50,7 +49,8 @@ namespace ApianAnchor.Contracts.MinApianAnchor
         public async Task<string> ReportEpochAsync( ApianEpochReport apEpoch)
         {
            // Waits for TX to be submittd, returns TX hash - does NOT wait for receipt
-            var txHash =  await ReportEpochRequestAsync( ApianEpoch.FromApian(apEpoch));
+            ApianEpoch solEpoch =  ApianEpoch.FromApian(apEpoch);
+            var txHash =  await ReportEpochRequestAsync(solEpoch);
 
             return txHash;
         }
