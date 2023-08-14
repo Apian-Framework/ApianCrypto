@@ -109,18 +109,24 @@ namespace ApianCrypto
 
         public async Task<int> GetChainIdAsync()
         {
+            if (web3 == null)
+                throw new Exception("GetChainIdAsync() - Not connected to chain");
             BigInteger bi =   await web3.Eth.ChainId.SendRequestAsync();
             return (int)bi;
         }
 
         public async Task<int> GetBlockNumberAsync()
         {
+            if (web3 == null)
+                throw new Exception("GetBlockNumberAsync() - Not connected to chain");
             BigInteger bi = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
             return (int)bi;
         }
 
         public async Task<int> GetBalanceAsync(string addr)
         {
+            if (web3 == null)
+                throw new Exception("GetBalanceAsync() - Not connected to chain");
             BigInteger bi = await web3.Eth.GetBalance.SendRequestAsync(addr);
             return (int)bi;
         }
@@ -199,14 +205,17 @@ namespace ApianCrypto
         public void AddSessionAnchorService(string sessionId, string contractAddr)
         {
 
-            if (contractAddr == null)
+            if (web3 == null)
+                throw new Exception("AddSessionAnchorService() - Not connected to chain");
+
+            if (string.IsNullOrEmpty(contractAddr))
             {
-                throw new Exception("AddSessionAnchorService(): ContractAddr cannot be null");
+                throw new Exception("AddSessionAnchorService(): ContractAddr cannot be null or empty");
             }
 
             // No session ID is a special case for when you want to do requests from contracts that you aren.t talking to.
 
-            if (sessionId == null)
+            if ( string.IsNullOrEmpty(sessionId) )
             {
                 if (!anchorsByContractAddr.ContainsKey(contractAddr))
                 {
@@ -254,10 +263,13 @@ namespace ApianCrypto
 
         public async Task<long> GetContractSessionCountAsync(string sessionId, string contractAddr = null)
         {
+            if (web3 == null)
+                throw new Exception("GetContractSessionCountAsync() - Not connected to chain");
+
             // If contract addr is non-null then it is queried, regardless of session Id
             // Otherwise the session's contract is queried
             // There DOES already need to be an entry for he contract addr.
-            if (contractAddr != null) {
+            if ( !string.IsNullOrEmpty(contractAddr) ) {
                 if (anchorsByContractAddr.ContainsKey(contractAddr)) {
                     return await anchorsByContractAddr[contractAddr].GetContractSessionCountAsync();
                 } else {
@@ -275,8 +287,11 @@ namespace ApianCrypto
 
         public async Task<List<string>> GetContractSessionIdsAsync(string sessionId, string contractAddr = null)
         {
+            if (web3 == null)
+                throw new Exception("GetContractSessionIdsAsync() - Not connected to chain");
+
             // Another contract-wide query. See above for details
-            if (contractAddr != null) {
+            if ( !string.IsNullOrEmpty(contractAddr) ) {
                 if (anchorsByContractAddr.ContainsKey(contractAddr)) {
                     return await anchorsByContractAddr[contractAddr].GetContractSessionIdsAsync();
                 } else {
@@ -294,6 +309,9 @@ namespace ApianCrypto
 
         public async Task<(AnchorSessionInfo, IList<long>)> GetSessionDataAsync(string sessionId)
         {
+            if (web3 == null)
+                throw new Exception("GetSessionDataAsync() - Not connected to chain");
+
             // returns a (sessionInfo, List<long> epochNums) tuple
             if (anchorsBySessionId.ContainsKey(sessionId)) {
                 return await anchorsBySessionId[sessionId].GetSessionDataAsync(sessionId);
@@ -305,6 +323,9 @@ namespace ApianCrypto
 
         public async Task<ApianEpochReport> GetSessionEpochAsync( string sessionId, long epochNum)
         {
+            if (web3 == null)
+                throw new Exception("GetSessionEpochAsync() - Not connected to chain");
+
             if (anchorsBySessionId.ContainsKey(sessionId)) {
                 return await anchorsBySessionId[sessionId].GetSessionEpochAsync(sessionId, epochNum);
             } else {
@@ -315,6 +336,9 @@ namespace ApianCrypto
 
         public async Task<string> RegisterSessionAsync(string sessionId, AnchorSessionInfo sessInfo)
         {
+            if (web3 == null)
+                throw new Exception("RegisterSessionAsync() - Not connected to chain");
+
             if (anchorsBySessionId.ContainsKey(sessionId)) {
                 return await anchorsBySessionId[sessionId].RegisterSessionAsync( sessInfo);
             } else {
@@ -325,10 +349,13 @@ namespace ApianCrypto
 
         public async Task<string> ReportEpochAsync(string sessionId, ApianEpochReport epoch)
         {
-          if (anchorsBySessionId.ContainsKey(sessionId)) {
+            if (web3 == null)
+                throw new Exception("ReportEpochAsync() - Not connected to chain");
 
-            string js = JsonConvert.SerializeObject(epoch, Formatting.Indented);
-            logger.Info($"Reporting epoch {epoch.EpochNum}:\n{js}");
+            if (anchorsBySessionId.ContainsKey(sessionId)) {
+
+                string js = JsonConvert.SerializeObject(epoch, Formatting.Indented);
+                logger.Info($"Reporting epoch {epoch.EpochNum}:\n{js}");
 
                 return await anchorsBySessionId[sessionId].ReportEpochAsync(epoch);
             } else {
